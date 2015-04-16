@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>User Info</title>
+</head>
+<body>
+  {{#userInfo}}
+    <h1>{{username}}</h1>
+    <h3>{{email}}</h3>
+  {{/userInfo}}
+  {{#userPosts}}
+    <p>Recent Posts by {{username}}:</p>
+    {{posts}}<br>
+  {{/userPosts}}
+</body>
+</html>
