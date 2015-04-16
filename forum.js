@@ -17,31 +17,23 @@ app.get('/', function(req, res){
   res.send(homepage);
 });
 
-// app.get('/users/:id', function(req, res){
-//   var id = req.params.id;
-//   db.all("SELECT * FROM users WHERE id=" + id + ";", {}, function(err, data){
-//     var html = fs.readFileSync('./views/user.html', 'utf8');
-//     var mustacheInfo = [{"username": data[0].name}, {"email": data[0].email}];
-//     var mustachePosts = 
-//     var rendered = mustache.render(html, {userInfo: mustacheInfo, userPosts: });
-//     console.log(err);
-//     console.log(data);
-//     res.send(rendered);
-//   });
-// });
-
 app.get('/users/:id', function(req, res){
   var id = req.params.id;
   db.all("SELECT users.name, users.email, topics.topic, topics.votes FROM users INNER JOIN topics ON users.id = topics.user_ID WHERE users.id=" + id + ";", {}, function(err, data){
-    console.log(data);
+    var name = data[0].name;
+    var email = data[0].email;
+    var mustachePostsVotes = [];
+    data.forEach(function(e){
+      mustachePostsVotes.push({"posts": e.topic, "votes": e.votes});
+    });
+    var html = fs.readFileSync('./views/user.html', 'utf8');
+    var mustacheUserInfo = {"username": name, "email": email};
+    var mustachePostsInfo = [];
+    var rendered = mustache.render(html, {userInfo: mustacheUserInfo, userPosts: mustachePostsVotes});
+    res.send(rendered);
   });
 });
 
 app.listen(3000, function(){
   console.log("Listening on port 3000");
 });
-
-// SELECT tableOne.columnToReturn, tableOne.anotherColumntoReturn, tableTwo.columnToReturn
-// FROM tableOne 
-// INNER JOIN tableTwo
-// ON tableOne.columnInQuestion = tableTwo.columnInQuestion;

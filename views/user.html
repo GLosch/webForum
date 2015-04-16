@@ -7,10 +7,11 @@
   {{#userInfo}}
     <h1>{{username}}</h1>
     <h3>{{email}}</h3>
+    <p>Recent Posts by {{username}}:</p>
   {{/userInfo}}
   {{#userPosts}}
-    <p>Recent Posts by {{username}}:</p>
-    {{posts}}<br>
+    <p>Post: {{posts}}</p>
+    <p>Votes: {{votes}}</p>
   {{/userPosts}}
 </body>
 </html>
