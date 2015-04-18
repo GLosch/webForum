@@ -7,8 +7,15 @@
   <div id="container">
     <h1>Welcome to the Forum</h1>
     <h3>Powered by Node.js and Express.js</h3>
+    <div id="search">
+      <a href="/search">Search</a>
+    </div>
     <div id="main-content">
       <!-- topics go here -->
+      <!-- Mustache template for topics -->
+      {{#homepagePosts}}
+        <p>{{postTitle}} by {{username}} ({{postVotes}} votes)</p>
+      {{/homepagePosts}}
     </div>
   </div>
 
