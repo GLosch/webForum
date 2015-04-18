@@ -68,7 +68,22 @@ app.get('/topics', function(req, res){
   });
 });
 
-app.get('/posts/:id', function(req, res){
+// Retrieve html page to create new topic -- WORKING
+app.get('/topics/new', function(req, res){
+  var newTopic = fs.readFileSync('./views/topics/new.html', 'utf8');
+  res.send(newTopic);
+});
+
+//Create new topic (coming from topics/new.html) -- WORKING
+app.post('/topics', function(req, res){
+  db.all("SELECT * FROM users WHERE name='" + req.body.username + "';", {}, function(err, data){
+    var userID = data[0].id;
+  db.run("INSERT INTO topics (topic, votes, user_ID) VALUES ('" + req.body.threadName + "', 0, " + userID + ");");
+  });
+  res.redirect('/');
+});
+
+app.get('/topics/:id', function(req, res){
   res.send("hi.");
 });
 
