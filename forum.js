@@ -123,12 +123,18 @@ app.get('/users/new', function(req, res){
   res.send(newUserPage);
 });
 
-//Create new user -- WORKING (but needs validation in case where username already exists)
+//Create new user -- WORKING
 app.post('/users/new', function(req, res){
   var username = req.body.username;
   var email = req.body.email;
+  db.all("SELECT * FROM users WHERE name='" + username + "';", {}, function(err, data){
+    if(!data[0]){
   db.run("INSERT INTO users (name, email) VALUES ('" + username + "', '" + email + "');");
   res.redirect('/');
+    } else {
+      res.send("That username already exists. Please go back and try a new username.");
+    }
+  });
 });
 
 // app.put('/users/:name', function(req, res){
