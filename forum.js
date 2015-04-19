@@ -83,20 +83,22 @@ app.post('/topics', function(req, res){
   res.redirect('/');
 });
 
-//show expanded page for a single topic by ID -- NOT WORKING
+//show expanded page for a single topic by ID -- NOT WORKING (need to replace user IDs with usernames for both topic author and comment authors. Otherwise this is working)
 app.get('/topics/:id', function(req, res){
   var topicID = req.params.id;
   db.all("SELECT topics.topic, topics.votes, topics.user_ID, comments.comment, comments.user_ID, comments.location FROM topics INNER JOIN comments ON topics.id = comments.topic_ID WHERE topics.id=" + topicID + ";", {}, function(err, data){
     // var topicUserID = data[0].;
     // var commentUserID = data[0].;
-    res.send(data);
-    // var topicArray = [];
-    // data.forEach(function(e){
-    //   topicArray.push({"topic": e.topic, "topicAuthor": e.user_ID, "votes": e.votes, "comment": e.comment, "author": e.user_ID, "location": e.location});
-    // });
-    // var mustacheTopic = fs.readFileSync('./views/topics/show.html', 'utf8');
-    // var rendered = mustache.render(mustacheTopic, {expandedTopic: topicArray});
-    // res.send(rendered);
+    var topicArray = [];
+    data.forEach(function(e){
+      db.all("SELECT * FROM users WHERE id=" + e.user_ID + ";", {}, function(err, innerData){
+        var commentUsername = e.name;
+      topicArray.push({"topic": e.topic, "topicAuthor": e.user_ID, "votes": e.votes, "comment": e.comment, "author": commentUsername, "location": e.location});
+      });
+    });
+    var mustacheTopic = fs.readFileSync('./views/topics/show.html', 'utf8');
+    var rendered = mustache.render(mustacheTopic, {expandedTopic: topicArray});
+    res.send(rendered);
   });
 });
 
