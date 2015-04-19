@@ -91,10 +91,10 @@ app.get('/topics/:id', function(req, res){
     // var commentUserID = data[0].;
     var topicArray = [];
     data.forEach(function(e){
-      db.all("SELECT * FROM users WHERE id=" + e.user_ID + ";", {}, function(err, innerData){
-        var commentUsername = e.name;
-      topicArray.push({"topic": e.topic, "topicAuthor": e.user_ID, "votes": e.votes, "comment": e.comment, "author": commentUsername, "location": e.location});
-      });
+      // db.all("SELECT * FROM users WHERE id=" + e.user_ID + ";", {}, function(err, innerData){
+      //   var commentUsername = e.name;
+      topicArray.push({"topic": e.topic, "topicAuthor": e.user_ID, "votes": e.votes, "comment": e.comment, "author": e.user_ID, "location": e.location});
+      // });
     });
     var mustacheTopic = fs.readFileSync('./views/topics/show.html', 'utf8');
     var rendered = mustache.render(mustacheTopic, {expandedTopic: topicArray});
@@ -102,6 +102,21 @@ app.get('/topics/:id', function(req, res){
   });
 });
 
+//add new comment (comes from topics/show.html) -- NOT WORKING (needs to pull in topic_ID from show.html page in order to pass in with db.run command)
+app.post('/comments/new', function(req, res){
+  var newComment = req.body.newComment;
+  var username = req.body.username;
+  request.get('http://ipinfo.io/', function(err, resp, body){
+    var parsed = JSON.parse(body);
+  var userLocation = parsed.city + ", " + parsed.region;
+  console.log(userLocation);
+  db.all("SELECT * FROM users WHERE name='" + username + "';", {}, function(err, data){
+    var userID = data[0].id;
+    db.run("INSERT INTO comments (topic_ID, user_ID, comment, location) VALUES (num, " + userID + ", '" + newComment + "', '" + userLocation + "');");
+    res.redirect('/topics');
+    });
+  });
+});
 
 // app.put('/users/:name', function(req, res){
 

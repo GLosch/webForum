@@ -3,7 +3,7 @@
   <title>{{topic}}</title>
 </head>
 <body>
-  <h1>Topics</h1>
+  <h1>Topic</h1>
   <h3>{{topic}}</h3>
   <h4>by: {{topicAuthor}}</h4>
   <h5>{{votes}} Votes</h5>
@@ -17,6 +17,21 @@
       <td>{{comment}}</td>
       <td>{{author}}</td>
       <td>{{location}}</td>
+    </tr>
+    <tr>
+      <form action="/comments/new" method="POST" id="newCommentForm">
+        <input type="hidden" name="{{topicID}}" />
+        <label>
+          Add New Comment: 
+          <textarea rows='5' cols='50' name="newComment">
+          </textarea>
+        </label>
+        <label>
+          Your username: 
+          <input type="text" name="username" />
+        </label>
+        <button type="submit">Submit</button>
+      </form>
     </tr>
   </table>
 {{/expandedTopic}}
