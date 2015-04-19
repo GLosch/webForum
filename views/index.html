@@ -13,7 +13,7 @@
     <div id="main-content">
       <a href="/topics/new">Create new thread</a>
       {{#homepagePosts}}
-        <p>{{postTitle}} by {{username}} ({{postVotes}} votes)</p>
+        <p><a href="topics/{{postID}}">{{postTitle}}</a> by {{username}} ({{postVotes}} votes)</p>
       {{/homepagePosts}}
     </div>
   </div>

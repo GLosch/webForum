@@ -1,11 +1,24 @@
 <html>
-<head>
-  <title>Topics Search Results</title>
+<head>{{#expandedTopic}}
+  <title>{{topic}}</title>
 </head>
 <body>
-   {{#topicInfo}}
-   <h2>Posts matching: "{{searchQuery}}"</h2>
-   <p>{{postTitle}} ({{postVotes}} votes)</p>
-  {{/topicInfo}}
+  <h1>Topics</h1>
+  <h3>{{topic}}</h3>
+  <h4>by: {{topicAuthor}}</h4>
+  <h5>{{votes}} Votes</h5>
+  <table>
+    <tr>
+      <td>Comment</td>
+      <td>Author</td>
+      <td>Location</td>
+    </tr>
+    <tr>
+      <td>{{comment}}</td>
+      <td>{{author}}</td>
+      <td>{{location}}</td>
+    </tr>
+  </table>
+{{/expandedTopic}}
 </body>
 </html>

@@ -1,0 +1,11 @@
+<html>
+<head>
+  <title>Topics Search Results</title>
+</head>
+<body>
+   {{#topicInfo}}
+   <h2>Posts matching: "{{searchQuery}}"</h2>
+   <p><a href="topics/{{topicID}}">{{postTitle}}</a> ({{postVotes}} votes)</p>
+  {{/topicInfo}}
+</body>
+</html>
