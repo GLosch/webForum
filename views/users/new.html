@@ -3,6 +3,16 @@
   <title>Create New User</title>
 </head>
 <body>
-
+  <form action="/users/new" method="POST">
+    <label>
+      New user name: 
+      <input type="text" name="username" />
+    </label>
+    <label>
+      email address: 
+      <input type="text" name="email" />
+    </label>
+    <button type="submit">Create User</button>
+  </form>
 </body>
 </html>

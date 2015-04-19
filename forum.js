@@ -118,6 +118,19 @@ app.post('/comments/new', function(req, res){
   });
 });
 
+app.get('/users/new', function(req, res){
+  var newUserPage = fs.readFileSync('./views/users/new.html', 'utf8');
+  res.send(newUserPage);
+});
+
+//Create new user -- WORKING (but needs validation in case where username already exists)
+app.post('/users/new', function(req, res){
+  var username = req.body.username;
+  var email = req.body.email;
+  db.run("INSERT INTO users (name, email) VALUES ('" + username + "', '" + email + "');");
+  res.redirect('/');
+});
+
 // app.put('/users/:name', function(req, res){
 
 // });
