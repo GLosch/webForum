@@ -1,5 +1,5 @@
 <html>
-<head>{{#expandedTopic}}
+<head>
   <title>{{topic}}</title>
 </head>
 <body>
@@ -8,7 +8,7 @@
   <h4>by: {{topicAuthor}}</h4>
   <h5>{{votes}} Votes</h5>
   <table>
-    <tr>
+    <tr>{{#expandedTopic}}
       <td>Comment</td>
       <td>Author</td>
       <td>Location</td>
@@ -18,13 +18,12 @@
       <td>{{author}}</td>
       <td>{{location}}</td>
     </tr>
+    {{/expandedTopic}}
     <tr>
-      <form action="/comments/new" method="POST" id="newCommentForm">
-        <input type="hidden" name="{{topicID}}" />
+      <form action="/topics/{{topicID}}/comments/new" method="POST" id="newCommentForm">
         <label>
           Add New Comment: 
-          <textarea rows='5' cols='50' name="newComment">
-          </textarea>
+          <textarea rows='5' cols='50' name="newComment" placeholder="Type your comment here"></textarea>
         </label>
         <label>
           Your username: 
@@ -33,7 +32,11 @@
         <button type="submit">Submit</button>
       </form>
     </tr>
+    <tr>
+      <form action="/topics/{{topicID}}?_method=DELETE" method="POST">
+        <button type="submit">Delete Post</button>
+      </form>
+    </tr>
   </table>
-{{/expandedTopic}}
 </body>
 </html>

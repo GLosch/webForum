@@ -6,6 +6,7 @@ var request = require('request');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var morgan = require('morgan');
+var marked = require('marked');
 
 var db = new sqlite3.Database('./database/forum.db');
 var app = express();
@@ -17,10 +18,10 @@ app.use(bodyParser.urlencoded({ extended: false}));
 app.get('/', function(req, res){
   var homepage = fs.readFileSync('./views/index.html', 'utf8');
   //add logic to list all topics
-  db.all("SELECT users.name, topics.topic, topics.votes, topics.id FROM users INNER JOIN topics ON users.id = topics.user_ID;", {}, function(err, data){
+  db.all("SELECT users.name, topics.topic, topics.votes, topics.id, topics.location FROM users INNER JOIN topics ON users.id = topics.user_ID;", {}, function(err, data){
     var topicsArray = [];
     data.forEach(function(e){
-      topicsArray.push({"postID": e.id, "postTitle": e.topic, "username": e.name, "postVotes": e.votes});
+      topicsArray.push({"postID": e.id, "postTitle": e.topic, "username": e.name, "postVotes": e.votes, "location": e.location});
     });
     var rendered = mustache.render(homepage, {homepagePosts: topicsArray});
     res.send(rendered);
@@ -87,35 +88,30 @@ app.post('/topics', function(req, res){
 app.get('/topics/:id', function(req, res){
   var topicID = req.params.id;
   db.all("SELECT topics.topic, topics.votes, topics.user_ID, comments.comment, comments.user_ID, comments.location FROM topics INNER JOIN comments ON topics.id = comments.topic_ID WHERE topics.id=" + topicID + ";", {}, function(err, data){
-    // var topicUserID = data[0].;
-    // var commentUserID = data[0].;
     var topicArray = [];
     data.forEach(function(e){
-      // db.all("SELECT * FROM users WHERE id=" + e.user_ID + ";", {}, function(err, innerData){
-      //   var commentUsername = e.name;
       topicArray.push({"topic": e.topic, "topicAuthor": e.user_ID, "votes": e.votes, "comment": e.comment, "author": e.user_ID, "location": e.location});
-      // });
-    });
+      });
     var mustacheTopic = fs.readFileSync('./views/topics/show.html', 'utf8');
-    var rendered = mustache.render(mustacheTopic, {expandedTopic: topicArray});
+    var rendered = mustache.render(mustacheTopic, {topic: topicArray[0].topic, topicAuthor: topicArray[0].topicAuthor, votes: topicArray[0].votes, expandedTopic: topicArray, topicID: topicID});
     res.send(rendered);
   });
 });
 
-//add new comment (comes from topics/show.html) -- NOT WORKING (needs to pull in topic_ID from show.html page in order to pass in with db.run command)
-app.post('/comments/new', function(req, res){
+//add new comment (comes from topics/show.html) -- WORKING (but needs to refresh the comments before the redirect)
+app.post('/topics/:topic_id/comments/new', function(req, res){
   var newComment = req.body.newComment;
   var username = req.body.username;
+  var topicID = req.params.topic_id;
   request.get('http://ipinfo.io/', function(err, resp, body){
     var parsed = JSON.parse(body);
   var userLocation = parsed.city + ", " + parsed.region;
-  console.log(userLocation);
   db.all("SELECT * FROM users WHERE name='" + username + "';", {}, function(err, data){
     var userID = data[0].id;
-    db.run("INSERT INTO comments (topic_ID, user_ID, comment, location) VALUES (num, " + userID + ", '" + newComment + "', '" + userLocation + "');");
-    res.redirect('/topics');
+    db.run("INSERT INTO comments (topic_ID, user_ID, comment, location) VALUES (" + topicID + ", " + userID + ", '" + newComment + "', '" + userLocation + "');");
     });
   });
+    res.redirect('/topics/' + req.params.topic_id);
 });
 
 app.get('/users/new', function(req, res){
@@ -137,9 +133,12 @@ app.post('/users/new', function(req, res){
   });
 });
 
-// app.put('/users/:name', function(req, res){
-
+//delete topic by ID (comes from topics/show.html) -- NOT WORKING
+// app.delete('/topics/:id', function(req, res){
+//   var id = req.params;
+//   res.send(id);
 // });
+
 
 app.listen(3000, function(){
   console.log("Listening on port 3000");
