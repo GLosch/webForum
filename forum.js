@@ -77,9 +77,21 @@ app.get('/topics/new', function(req, res){
 
 //Create new topic (coming from topics/new.html) -- WORKING
 app.post('/topics', function(req, res){
+  request.get('http://ipinfo.io/', function(err, resp, body){
+      var parsed = JSON.parse(body);
+      var userLocation = parsed.city + ", " + parsed.region;
   db.all("SELECT * FROM users WHERE name='" + req.body.username + "';", {}, function(err, data){
     var userID = data[0].id;
-  db.run("INSERT INTO topics (topic, votes, user_ID) VALUES ('" + req.body.threadName + "', 0, " + userID + ");");
+  db.serialize(function(){
+    db.run("INSERT INTO topics (topic, votes, user_ID, location) VALUES ('" + req.body.threadName + "', 0, " + userID + ", '" + userLocation + "');");
+      db.serialize(function(){
+        db.all("SELECT * FROM topics WHERE topic='" + req.body.threadName + "';", {}, function(err, innerData){
+        var topicID = innerData[0].id;
+        db.run("INSERT INTO comments (topic_ID, user_ID, comment, location) VALUES (" + topicID + ", " + userID + ", '" + req.body.postBody + "', '" + userLocation + "');");
+          });
+      });
+  });
+  });
   });
   res.redirect('/');
 });
