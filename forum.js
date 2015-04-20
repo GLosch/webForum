@@ -21,7 +21,7 @@ app.get('/', function(req, res){
   db.all("SELECT users.name, topics.topic, topics.votes, topics.id, topics.location FROM users INNER JOIN topics ON users.id = topics.user_ID;", {}, function(err, data){
     var topicsArray = [];
     data.forEach(function(e){
-      topicsArray.push({"postID": e.id, "postTitle": e.topic, "username": e.name, "postVotes": e.votes, "location": e.location});
+      topicsArray.push({"topicID": e.id, "postTitle": e.topic, "username": e.name, "postVotes": e.votes, "location": e.location});
     });
     var rendered = mustache.render(homepage, {homepagePosts: topicsArray});
     res.send(rendered);
@@ -147,6 +147,13 @@ app.delete('/topics/:topic_id/comments/:comment_id', function(req, res){
   var id = req.params.comment_id;
   db.run("DELETE FROM comments WHERE id=" + id + ";");
   res.redirect('/topics/' + req.params.topic_id);
+});
+
+//UPVOTE topic
+app.put('/upvote/topics/:topic_id', function(req, res){
+  var id = req.params.topic_id;
+  db.run("UPDATE topics SET votes=votes+1 WHERE id=" + id + ";");
+  res.redirect('/');
 });
 
 

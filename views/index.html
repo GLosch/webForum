@@ -15,9 +15,24 @@
     </div>
     <div id="main-content">
       <a href="/topics/new">Create new thread</a>
+      <table>
+        <tr>
+          <td>Title</td>
+          <td>Created By</td>
+          <td>Votes</td>
+          <td>Location</td>
+          <td>Upvote</td>
+        </tr>
       {{#homepagePosts}}
-        <p><a href="topics/{{postID}}">{{postTitle}}</a> by {{username}} ({{postVotes}} votes) -- posted from {{location}}</p>
+        <tr>
+          <td><a href="topics/{{topicID}}">{{postTitle}}</a></td>
+          <td>{{username}}</td>
+          <td>{{postVotes}}</td>
+          <td>{{location}}</td>
+          <td><form action="/upvote/topics/{{topicID}}?_method=PUT" method="POST"><button type="submit">Upvote</button></form></td>
+        </tr>
       {{/homepagePosts}}
+      </table>
     </div>
   </div>
 
