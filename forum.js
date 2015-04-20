@@ -133,11 +133,18 @@ app.post('/users/new', function(req, res){
   });
 });
 
-//delete topic by ID (comes from topics/show.html) -- NOT WORKING
-// app.delete('/topics/:id', function(req, res){
-//   var id = req.params;
-//   res.send(id);
-// });
+//delete topic by ID (comes from topics/show.html) -- WORKING
+app.delete('/topics/:topic_id', function(req, res){
+  var id = req.params.topic_id;
+  db.run("DELETE FROM topics WHERE id=" + id + ";");
+  db.run("DELETE FROM comments WHERE topic_ID=" + id + ";");
+  res.redirect('/');
+});
+
+//delete comment by ID (comes from topics/show.html) -- NOT WORKING
+app.delete('/topics/:topic_id', function(req, res){
+  
+});
 
 
 app.listen(3000, function(){
