@@ -34,7 +34,7 @@ app.get('/search', function(req, res){
   res.send(searchPage);
 });
 
-//Get user-specific info page (from search) -- WORKING
+//Get user-specific info page (from search) -- WORKING (can improve this by combining the two SQL queries into an INNER JOIN)
 app.get('/users', function(req, res){
   var username = req.query.username;
   db.all("SELECT * FROM users WHERE name='" + username + "';", function(err, data){
@@ -44,12 +44,12 @@ app.get('/users', function(req, res){
     db.all("SELECT * FROM topics WHERE user_id=" + userID + ";", function(err, data){
       var mustachePostsVotes = [];
     data.forEach(function(e){
-      mustachePostsVotes.push({"posts": e.topic, "votes": e.votes});
+      mustachePostsVotes.push({"posts": e.topic, "votes": e.votes, "location": e.location});
     });
     var html = fs.readFileSync('./views/user.html', 'utf8');
     var mustacheUserInfo = {"username": name, "email": email};
     var mustachePostsInfo = [];
-    var rendered = mustache.render(html, {userInfo: mustacheUserInfo, userPosts: mustachePostsVotes});
+    var rendered = mustache.render(html, {userInfo: mustacheUserInfo, userPosts: mustachePostsVotes, user_id: userID});
     res.send(rendered);
     });
   });
@@ -147,6 +147,16 @@ app.delete('/topics/:topic_id/comments/:comment_id', function(req, res){
   var id = req.params.comment_id;
   db.run("DELETE FROM comments WHERE id=" + id + ";");
   res.redirect('/topics/' + req.params.topic_id);
+});
+
+//delete user by ID (comes from user.html)
+app.delete('/users/:user_id', function(req, res){
+  var id = req.params.user_id;
+  // console.log(req.params.user_id);
+  db.run("DELETE FROM users WHERE id=" + id + ";");
+  db.run("DELETE FROM topics WHERE user_ID=" + id + ";");
+  db.run("DELETE FROM comments WHERE user_ID=" + id + ";");
+  res.redirect('/');
 });
 
 //UPVOTE topic

@@ -8,13 +8,29 @@
     <h1>{{username}}</h1>
     <h3>{{email}}</h3>
     <div id="search">
-      <a href="">Search</a>
+      <a href="/search">Search</a>
+    </div>
+    <div id="editUser">
+      <a href="/users/edit">Edit User</a>
     </div>
     <p>All Posts by {{username}}:</p>
   {{/userInfo}}
+  <table>
+    <tr>
+      <td>Post</td>
+      <td>Votes</td>
+      <td>Location</td>
+    </tr>
   {{#userPosts}}
-    <p>Post: {{posts}}</p>
-    <p>Votes: {{votes}}</p>
+    <tr>
+      <td>{{posts}}</td>
+      <td>{{votes}}</td>
+      <td>{{location}}</td>
+    </tr>
   {{/userPosts}}
+  </table>
+  <div id="deleteUser">
+      <form action="/users/{{user_id}}?_method=DELETE" method="POST"><button type="submit">Delete User</button></form>
+    </div>
 </body>
 </html>
