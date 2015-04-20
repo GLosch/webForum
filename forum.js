@@ -84,13 +84,14 @@ app.post('/topics', function(req, res){
   res.redirect('/');
 });
 
-//show expanded page for a single topic by ID -- NOT WORKING (need to replace user IDs with usernames for both topic author and comment authors. Otherwise this is working)
+//show expanded page for a single topic by ID -- WORKING
 app.get('/topics/:id', function(req, res){
   var topicID = req.params.id;
-  db.all("SELECT topics.topic, topics.votes, topics.user_ID, comments.comment, comments.user_ID, comments.location FROM topics INNER JOIN comments ON topics.id = comments.topic_ID WHERE topics.id=" + topicID + ";", {}, function(err, data){
+  db.all("SELECT topics.topic, topics.votes, topics.user_ID, comments.comment, comments.user_ID, comments.location, comments.id, users.name FROM topics INNER JOIN comments ON topics.id = comments.topic_ID INNER JOIN users ON comments.user_ID = users.id WHERE topics.id=" + topicID + ";", {}, function(err, data){
+    console.log(data);
     var topicArray = [];
     data.forEach(function(e){
-      topicArray.push({"topic": e.topic, "topicAuthor": e.user_ID, "votes": e.votes, "comment": e.comment, "author": e.user_ID, "location": e.location});
+      topicArray.push({"topic": e.topic, "topicAuthor": e.name, "votes": e.votes, "comment": e.comment, "author": e.name, "location": e.location, commentID: e.id});
       });
     var mustacheTopic = fs.readFileSync('./views/topics/show.html', 'utf8');
     var rendered = mustache.render(mustacheTopic, {topic: topicArray[0].topic, topicAuthor: topicArray[0].topicAuthor, votes: topicArray[0].votes, expandedTopic: topicArray, topicID: topicID});
@@ -142,8 +143,10 @@ app.delete('/topics/:topic_id', function(req, res){
 });
 
 //delete comment by ID (comes from topics/show.html) -- NOT WORKING
-app.delete('/topics/:topic_id', function(req, res){
-  
+app.delete('/topics/:topic_id/comments/:comment_id', function(req, res){
+  var id = req.params.comment_id;
+  db.run("DELETE FROM comments WHERE id=" + id + ";");
+  res.redirect('/topics/' + req.params.topic_id);
 });
 
 

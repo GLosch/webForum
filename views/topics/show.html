@@ -12,11 +12,15 @@
       <td>Comment</td>
       <td>Author</td>
       <td>Location</td>
+      <td>Edit?</td>
+      <td>Delete?</td>
     </tr>
     <tr>
       <td>{{comment}}</td>
       <td>{{author}}</td>
       <td>{{location}}</td>
+      <td><form method="POST" action="/topics/{{topicID}}/comments/{{commentID}}?_method=PUT"><button type="submit">Edit Comment</button></form></td>
+      <td><form method="POST" action="/topics/{{topicID}}/comments/{{commentID}}?_method=DELETE"><button type="submit">Delete Comment</button></form></td>
     </tr>
     {{/expandedTopic}}
     <tr>
