@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: false}));
 app.get('/', function(req, res){
   var homepage = fs.readFileSync('./views/index.html', 'utf8');
   //add logic to list all topics
-  db.all("SELECT users.name, topics.topic, topics.votes, topics.id, topics.location FROM users INNER JOIN topics ON users.id = topics.user_ID;", {}, function(err, data){
+  db.all("SELECT users.name, topics.topic, topics.votes, topics.id, topics.location FROM users INNER JOIN topics ON users.id = topics.user_ID ORDER BY votes DESC;", {}, function(err, data){
     var topicsArray = [];
     data.forEach(function(e){
       topicsArray.push({"topicID": e.id, "postTitle": e.topic, "username": e.name, "postVotes": e.votes, "location": e.location});
@@ -87,7 +87,7 @@ app.post('/topics', function(req, res){
       db.serialize(function(){
         db.all("SELECT * FROM topics WHERE topic='" + req.body.threadName + "';", {}, function(err, innerData){
         var topicID = innerData[0].id;
-        db.run("INSERT INTO comments (topic_ID, user_ID, comment, location) VALUES (" + topicID + ", " + userID + ", '" + req.body.postBody + "', '" + userLocation + "');");
+        db.run("INSERT INTO comments (topic_ID, user_ID, comment, location) VALUES (" + topicID + ", " + userID + ", '" + marked(req.body.postBody) + "', '" + userLocation + "');");
           });
       });
   });
@@ -121,7 +121,7 @@ app.post('/topics/:topic_id/comments/new', function(req, res){
   var userLocation = parsed.city + ", " + parsed.region;
   db.all("SELECT * FROM users WHERE name='" + username + "';", {}, function(err, data){
     var userID = data[0].id;
-    db.run("INSERT INTO comments (topic_ID, user_ID, comment, location) VALUES (" + topicID + ", " + userID + ", '" + newComment + "', '" + userLocation + "');");
+    db.run("INSERT INTO comments (topic_ID, user_ID, comment, location) VALUES (" + topicID + ", " + userID + ", '" + marked(newComment) + "', '" + userLocation + "');");
     });
   });
     res.redirect('/topics/' + req.params.topic_id);
